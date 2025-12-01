@@ -36,10 +36,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}  # PR 时不推送，仅构建验证
           platforms: linux/amd64,linux/arm64
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/fmie:26866
+          # 仅保留合法的镜像标签
+          tags: ghcr.io/${{ github.repository_owner }}/fmie:26866
+          # OCI 元数据移到 labels 字段
+          labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=HTTP Server
             org.opencontainers.image.licenses=MIT
